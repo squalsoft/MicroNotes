@@ -1,12 +1,37 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+  <div id="app">    
+    <div v-if="$route.matched.some(({ name }) => name === 'Notes')">
+      <input type="button" class="exit" value="Выйти" @click="exit"/>  
     </div>
+    <div id="nav" v-else>
+      <router-link to="/login">Вход</router-link> |  
+      <router-link to="/register">Регистрация</router-link>    
+    </div>
+    
     <router-view/>
   </div>
 </template>
+
+<script>
+import cookies from "js-cookie";
+
+export default {
+  data: function () {
+    return {
+      isLoggedIn: false,
+    }
+  },
+  async mounted() {
+  },
+  methods: {
+    exit() {
+      // Очистка реквизитов доступа
+      cookies.remove('x-access-token');
+      this.$router.push('login');
+    }
+  }
+}
+</script>
 
 <style>
 #app {

@@ -47,7 +47,7 @@ describe("Integration tests", () => {
     });
 
     it("notesForPage returns notes", async () => {
-        const notes = await ns.notesForPage(userId, 1);
+        const notes = await ns.notesForPage(userId, 0);
         expect(notes.length).toBe(1);
     });
 

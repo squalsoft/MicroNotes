@@ -7,7 +7,7 @@ module.exports = {
     /** Регистрация пользователя */
     register: async function (login, password){
         // Проверка, что такого логина нет
-        const [res1] = await db.promise().execute(            
+        const [res1] = await db.promise().query(            
             "SELECT COUNT (*) AS usersCount FROM users WHERE login=? ", [login]);
         if(res1[0].usersCount > 0) {
             return null;
@@ -16,7 +16,7 @@ module.exports = {
         // Хешируем пароль
         const hashPass = await bcrypt.hash(password, 4);
 
-        const [result] = await db.promise().execute(
+        const [result] = await db.promise().query(
             "INSERT INTO users (login, password) VALUES (?,?)",[login, hashPass]);
         return result.insertId;
     },
@@ -25,7 +25,7 @@ module.exports = {
     login: async function (login, password){
         try {        
             // Ищем пользователя
-            const [rows] = await db.promise().execute(
+            const [rows] = await db.promise().query(
                 "SELECT * FROM users WHERE login=?",[login]);
             if(rows.length === 0) {
                 // Не найден

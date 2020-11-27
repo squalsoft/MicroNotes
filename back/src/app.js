@@ -2,13 +2,35 @@ const express = require("express");
 const config = require("./config")
 const app = express();
 const port = config.backendPort;
-const routes = require("./api");
+const routes = require("./controllers");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 async function startServer() {
 
   // Middleware для преобразования string из req.body в json
   app.use(bodyParser.json());
+  
+  app.use(cors());
+
+  // Обработка unhandledRejection и передача ошибки следующему обработчику
+  app.use(function (req, res, next) {
+    function unhandledRejection(reason, p) {
+        console.error('Possibly Unhandled Rejection at: Promise ', p, " reason: ", reason);
+
+        next(reason);
+    }
+    process.on('unhandledRejection', unhandledRejection);
+    
+    var end = res.end;
+    res.end = function (chunk, encoding) {
+        // Очистка памяти
+        process.removeListener('unhandledRejection', unhandledRejection);
+        res.end = end;
+        res.end(chunk, encoding);
+    };
+    next();
+  });
 
   // Подключаем пути api
   app.use('/api', routes());
@@ -34,12 +56,14 @@ async function startServer() {
   });
   app.use((err, req, res, next) => {
     console.log(`Ошибка бекенда ${err.status}: ${err.message}`);
-    res.status(err.status || 500);
-    res.json({
-      errors: {
-        message: err.message,
-      },
-    });
+
+    // Проверка отправленности ответа клиенту
+    if (res.headersSent) {
+      return next(err);
+    }
+    
+    res.status(err.status || 500);    
+    res.json({ type: "error", message: "Ошибка сервера" });
   });
   
   app.listen(port, () => {

@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
                 .json({ type: "error", message: "Неверный токен.", error });
         } else {
             // Всё ок, пропускаем и сохраняем айдишник пользователя для дальнейшей обработки
-            req.uerId = result.id;
+            req.userId = result.id;
             next();   
         }
     });

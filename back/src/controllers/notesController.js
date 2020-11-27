@@ -9,19 +9,14 @@ module.exports = (app) => {
 
     // Получение всех заметок пользователя
     route.get(
-        '/all', isAuth,
+        '/my/:skip', isAuth,
         async (req, res) => {
-            // Получаем постранично заметки для пользователя
-            let page = 1;
-            if(req.body.page) {
-                page = req.body.page;
-            }
-            
-            const notes = await notesService.notesForPage(req.uerId, page);
-            const totalNotesCount = await notesService.notesForUserCount(req.uerId);
+            // Получаем постранично заметки для пользователя            
+            const notes = await notesService.notesForPage(req.userId, 
+                parseInt(req.params.skip));
 
             return res.status(200)
-                .json({ notes: notes, totalNotesCount: totalNotesCount });
+                .json({ notes: notes });
     });
 
     route.get(
@@ -29,13 +24,19 @@ module.exports = (app) => {
         async (req, res) => {
             // Получаем расшаренную заметку
             const note = await notesService.getSharedNote(req.params.id);
+
+            if(!note) {
+                return res.status(404)
+                    .json({ type: "error", message: "Заметка не найдена" });
+            }
+
             return res.status(200).json({ note: note });
     });
 
     route.post(
-        '/share', isAuth,
+        '/share/:id', isAuth,
         async (req, res) => {
-            const shareId = await notesService.share(req.userId, req.body.noteId);
+            const shareId = await notesService.share(req.userId, parseInt(req.params.id));
             return res.status(200).json({ shareId: shareId });
         });
     route.post(
@@ -47,13 +48,17 @@ module.exports = (app) => {
     route.post(
         '/update/:id', isAuth,
         async (req, res) => {
+            if(req.body.text.length > 1000) {
+                return res.status(400)
+                    .json({ type: "error", message: "Длина заметки не может быть больше 1000 символов" });
+            }
             await notesService.edit(req.userId, req.params.id, req.body.text);
-            return res.status(200);
+            return res.status(200).json({ });
         });
     route.post(
         '/delete/:id', isAuth,
         async (req, res) => {
-            await notesService.deleteNode(req.userId, req.params.id);
-            return res.status(200);
+            await notesService.deleteNode(req.userId, parseInt(req.params.id));
+            return res.status(200).json({ });
         });
 }
