@@ -1,5 +1,6 @@
 <template>
   <div id="app">    
+    <h1>MicroNotes</h1>
     <div v-if="$route.matched.some(({ name }) => name === 'Notes')">
       <input type="button" class="exit" value="Выйти" @click="exit"/>  
     </div>

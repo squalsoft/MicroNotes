@@ -5,13 +5,14 @@
       <div v-if="error" class="error">
         {{error}}
       </div>
-      <input type="button" :disabled="loading" @click="addNote" class="add-note" title="Добавить заметку" value="+" />
+      <input type="button" :disabled="loading" @click="addNote" class="add-note" 
+        title="Добавить заметку" value="+ Добавить заметку" />
       <Note v-for="note in notes" :key="note.id" :id="note.id" 
         v-model="note.text" @removed="removed"
         :shareId="note.shareId" />
       <br>
       <div v-if="loading" class="loader-small"></div>      
-      <input v-else type="button" @click="getNotes" class="load-more" value="Загрузить ещё" />
+      <input v-else-if="showLoadMore" type="button" @click="getNotes" class="load-more" value="Загрузить ещё" />
     </div>
   </div>
 </template>
@@ -28,7 +29,8 @@ export default {
     return {
       error: "",      
       loading: true,
-      notes: []
+      notes: [],
+      showLoadMore: false
     }
   },
   async mounted() {
@@ -42,6 +44,8 @@ export default {
         for(const note of response.data.notes) {
           this.notes.push(note);
         }
+
+        this.showLoadMore = response.data.totalNotes > this.notes.length;
       } catch(err) {      
         this.error = errorDetails(err);
       } finally {
@@ -80,9 +84,7 @@ export default {
   text-align: center;
 }
 .add-note {
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  border-radius: 10%;
   margin-bottom: 10px;
 }
 </style>

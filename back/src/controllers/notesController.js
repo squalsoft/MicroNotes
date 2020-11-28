@@ -14,9 +14,10 @@ module.exports = (app) => {
             // Получаем постранично заметки для пользователя            
             const notes = await notesService.notesForPage(req.userId, 
                 parseInt(req.params.skip));
+            const totalNotes = await notesService.notesForUserCount(req.userId);
 
             return res.status(200)
-                .json({ notes: notes });
+                .json({ notes: notes, totalNotes: totalNotes});
     });
 
     route.get(

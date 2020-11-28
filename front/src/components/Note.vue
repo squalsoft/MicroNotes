@@ -43,6 +43,11 @@ export default {
       this.setShareUrl(this.shareId);
     }
 
+    // Фокус
+    if(!this.text) {
+      this.$refs.noteInput.focus();
+    }
+
     // Автосохранение
     setInterval(this.checkAndSave, 1000);
   },

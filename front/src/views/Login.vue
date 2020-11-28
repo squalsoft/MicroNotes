@@ -4,9 +4,9 @@
 
     <div class="login-box">
       <b>Логин</b><br>
-      <input type="text" v-model="login" /><br>
+      <input type="text" v-model="login" v-on:keyup.enter="loginUser" /><br>
       <b>Пароль</b><br>
-      <input type="password" v-model="password" /><br>
+      <input type="password" v-model="password" v-on:keyup.enter="loginUser" /><br>
       <div v-if="loading" class="loader-small"></div>
       <input v-else  @click="loginUser" type="button" class="login-button" value="Войти">
       <div v-if="error" class="error">
