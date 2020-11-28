@@ -82,7 +82,8 @@ export default {
       this.loading = true;
       this.error = "";
       try {
-        const response = await this.$axios.post("/api/notes/share/" + this.id);        
+        const response = await this.$axios.post("/api/notes/share/" + this.id);  
+        this.shareId = response.data.shareId;  
         this.setShareUrl(response.data.shareId);
       } catch(err) {      
         this.error = errorDetails(err);
