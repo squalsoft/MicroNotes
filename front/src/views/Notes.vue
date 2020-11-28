@@ -84,7 +84,6 @@ export default {
   text-align: center;
 }
 .add-note {
-  border-radius: 10%;
   margin-bottom: 10px;
 }
 </style>
