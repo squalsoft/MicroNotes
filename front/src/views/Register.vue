@@ -4,15 +4,19 @@
     <h3>Придумайте логин и пароль</h3>
 
     <div class="register-box">
-      <b>Логин</b><br>
-      <input type="text" v-model="login" /><br>
-      <b>Пароль</b><br>
-      <input type="password" v-model="password" /><br>
-      <b>Подтверждение пароля</b><br>
-      <input type="password" v-model="passwordConfirm" /><br>
-      <input type="button" :disabled="$store.state.sys.loading"  
-        @click="registerUser"  class="register-button" 
-        value="Зарегистрироваться">
+      <b>Логин</b><br />
+      <input type="text" v-model="login" /><br />
+      <b>Пароль</b><br />
+      <input type="password" v-model="password" /><br />
+      <b>Подтверждение пароля</b><br />
+      <input type="password" v-model="passwordConfirm" /><br />
+      <input
+        type="button"
+        :disabled="$store.state.sys.loading"
+        @click="registerUser"
+        class="register-button"
+        value="Зарегистрироваться"
+      />
     </div>
   </div>
 </template>
@@ -25,27 +29,26 @@ export default {
     return {
       login: "",
       password: "",
-      passwordConfirm: ""
-    }
+      passwordConfirm: "",
+    };
   },
   methods: {
     async registerUser() {
-      if(this.password !== this.passwordConfirm) {
+      if (this.password !== this.passwordConfirm) {
         throw new Error("Пароли должны совпадать");
       }
-        const response = await this.$axios.post("/api/user/register/",
-        {
-          login: this.login,
-          password: this.password
-        });
-        const token = response.data.token;
-        // Сразу логиним пользователя после регистрации
-        // Устанавливаем токен в кукисы на 24 часа для дальнейшего доступа      
-        cookies.set('x-access-token', token, { expires: 1 });
-        this.$router.push('notes');
-    }
-  }
-}
+      const response = await this.$axios.post("/api/user/register/", {
+        login: this.login,
+        password: this.password,
+      });
+      const token = response.data.token;
+      // Сразу логиним пользователя после регистрации
+      // Устанавливаем токен в кукисы на 24 часа для дальнейшего доступа
+      cookies.set("x-access-token", token, { expires: 1 });
+      this.$router.push("notes");
+    },
+  },
+};
 </script>
 
 <style scoped>

@@ -1,13 +1,15 @@
 <template>
   <div>
-    <div class="error-global" v-if="$store.state.sys.err">{{ $store.state.sys.err }}</div>
+    <div class="error-global" v-if="$store.state.sys.err">
+      {{ $store.state.sys.err }}
+    </div>
     <slot></slot>
   </div>
 </template>
 
 <script>
 // Глобальный обработчик ошибок
-import {errorDetails} from "@/utils/error";
+import { errorDetails } from "@/utils/error";
 
 export default {
   //   props: {
@@ -17,20 +19,22 @@ export default {
     return {
       vm: null,
       info: null,
-      timerId: null
+      timerId: null,
     };
   },
   errorCaptured(err, vm, info) {
     console.log(err);
-    const errMsg = errorDetails(err);   
+    const errMsg = errorDetails(err);
     this.$store.commit("sys/setError", errMsg);
 
     // Устанавливаем отображение ошибки на время
-    if(this.timerId) {
+    if (this.timerId) {
       // Отменяем предыдущий таймаут
       clearTimeout(this.timerId);
     }
-    this.timerId = setTimeout(()=>{this.$store.commit("sys/setError", "");}, 5000);
+    this.timerId = setTimeout(() => {
+      this.$store.commit("sys/setError", "");
+    }, 5000);
 
     // Системная информация
     this.vm = vm;
