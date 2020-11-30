@@ -10,39 +10,29 @@
       <input type="password" v-model="password" /><br>
       <b>Подтверждение пароля</b><br>
       <input type="password" v-model="passwordConfirm" /><br>
-      <div v-if="loading" class="loader-small"></div>
-      <input type="button" v-else  @click="registerUser"  class="register-button" 
+      <input type="button" :disabled="$store.state.sys.loading"  
+        @click="registerUser"  class="register-button" 
         value="Зарегистрироваться">
-      <div v-if="error" class="error">
-        {{error}}
-      </div>
     </div>
   </div>
 </template>
 
 <script>
-import {errorDetails} from "@/utils/error";
 import cookies from "js-cookie";
 
 export default {
   data: function () {
     return {
-      error: "",
       login: "",
       password: "",
-      passwordConfirm: "",
-      loading: false
+      passwordConfirm: ""
     }
   },
   methods: {
     async registerUser() {
-      this.error = "";
       if(this.password !== this.passwordConfirm) {
-        this.error = "Пароли должны совпадать";
-        return;
+        throw new Error("Пароли должны совпадать");
       }
-      this.loading = true;
-      try {
         const response = await this.$axios.post("/api/user/register/",
         {
           login: this.login,
@@ -53,12 +43,6 @@ export default {
         // Устанавливаем токен в кукисы на 24 часа для дальнейшего доступа      
         cookies.set('x-access-token', token, { expires: 1 });
         this.$router.push('notes');
-
-      } catch(err) {
-        this.error = errorDetails(err);
-      } finally {
-        this.loading = false;
-      }
     }
   }
 }

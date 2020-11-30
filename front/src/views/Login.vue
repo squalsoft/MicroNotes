@@ -2,53 +2,41 @@
   <div class="login">
     <h1>Вход</h1>
 
-    <div class="login-box">
+    <form class="login-box">
       <b>Логин</b><br>
-      <input type="text" v-model="login" v-on:keyup.enter="loginUser" /><br>
+      <input type="text" v-model="login" v-on:keyup.enter="loginUser"
+        autocomplete="username" /><br>
       <b>Пароль</b><br>
-      <input type="password" v-model="password" v-on:keyup.enter="loginUser" /><br>
-      <div v-if="loading" class="loader-small"></div>
-      <input v-else  @click="loginUser" type="button" class="login-button" value="Войти">
-      <div v-if="error" class="error">
-        {{error}}
-      </div>
-    </div>
+      <input type="password" v-model="password" v-on:keyup.enter="loginUser"
+        autocomplete="password" /><br>
+      <input :disabled="$store.state.sys.loading"  
+        @click="loginUser" 
+        type="button" class="login-button" value="Войти">      
+    </form>
   </div>
 </template>
 
 <script>
-import {errorDetails} from "@/utils/error";
 import cookies from "js-cookie";
 
 export default {
   data: function () {
     return {
-      error: "",
       login: "",
-      password: "",
-      loading: false
+      password: ""
     }
   },
   methods: {
     async loginUser() {
-      this.error = "";
-      this.loading = true;
-      try {
         const response = await this.$axios.post("/api/user/login/",
-        {
-          login: this.login,
-          password: this.password
-        });
+          {
+            login: this.login,
+            password: this.password
+          });
         const token = response.data.token;
         // Устанавливаем токен в кукисы на 24 часа для дальнейшего доступа      
         cookies.set('x-access-token', token, { expires: 1 });
         this.$router.push('notes');
-
-      } catch(err) {
-        this.error = errorDetails(err);
-      } finally {
-        this.loading = false;
-      }
     }
   }
 }

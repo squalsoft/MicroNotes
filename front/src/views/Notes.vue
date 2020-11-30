@@ -2,33 +2,28 @@
   <div class="notes">
     <h1>Мои заметки</h1>
     <div class="notes-container">      
-      <div v-if="error" class="error">
-        {{error}}
-      </div>
-      <input type="button" :disabled="loading" @click="addNote" class="add-note" 
+      <input type="button" :disabled="$store.state.sys.loading"  
+        @click="addNote" class="add-note" 
         title="Добавить заметку" value="+ Добавить заметку" />
       <Note v-for="note in notes" :key="note.id" :id="note.id" 
         v-model="note.text" @removed="removed"
         :shareId="note.shareId" />
-      <br>
-      <div v-if="loading" class="loader-small"></div>      
-      <input v-else-if="showLoadMore" type="button" @click="getNotes" class="load-more" value="Загрузить ещё" />
+      <br>  
+      <input :disabled="$store.state.sys.loading"  
+        type="button" @click="getNotes" class="load-more" value="Загрузить ещё" />
     </div>
   </div>
 </template>
 <script>
 // @ is an alias to /src
 import Note from '@/components/Note.vue'
-import {errorDetails} from "@/utils/error";
 
 export default {
   components: {
     Note
   },
   data: function () {
-    return {
-      error: "",      
-      loading: true,
+    return {     
       notes: [],
       showLoadMore: false
     }
@@ -38,19 +33,12 @@ export default {
   },
   methods: {
     async getNotes() {
-      this.loading = true;
-      try {
-        const response = await this.$axios.get("/api/notes/my/" + this.notes.length);
-        for(const note of response.data.notes) {
-          this.notes.push(note);
-        }
-
-        this.showLoadMore = response.data.totalNotes > this.notes.length;
-      } catch(err) {      
-        this.error = errorDetails(err);
-      } finally {
-        this.loading = false;
+      const response = await this.$axios.get("/api/notes/my/" + this.notes.length);
+      for(const note of response.data.notes) {
+        this.notes.push(note);
       }
+
+      this.showLoadMore = response.data.totalNotes > this.notes.length;     
     },
     removed(id) {
       // Убираем из списка
@@ -58,22 +46,15 @@ export default {
     },   
     async addNote() {
       // Если добавилась в БД, то добавляем в коллекцию
-      this.loading = true;
-      try {
-        const response = await this.$axios.post("/api/notes/create",
-        {
-          text: ""
-        });
-        const newNoteId = response.data.noteId;
-        this.notes.unshift({
-          id: newNoteId,
-          text: ""
-        });
-      } catch(err) {      
-        this.error = errorDetails(err);
-      } finally {
-        this.loading = false;
-      }
+      const response = await this.$axios.post("/api/notes/create",
+      {
+        text: ""
+      });
+      const newNoteId = response.data.noteId;
+      this.notes.unshift({
+        id: newNoteId,
+        text: ""
+      });     
     }
   }
 }

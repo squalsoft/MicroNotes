@@ -15,7 +15,28 @@
     color: whitesmoke;
     font-weight: bold;
 }
+.error-global {
+    padding: 10px;
+    background-color: tomato;
+    color: whitesmoke;
+    font-weight: bold;
+    top: 10px;
+    left: -8px;
+    position: fixed;
+    width: 100%;
+}
 
+.loader {
+    border: 5px solid #f3f3f3; /* Light grey */
+    border-top: 7px solid #f8c15b; /* Blue */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    position: fixed;
+    top: 70px;
+}
 .loader-small {
     border: 5px solid #f3f3f3; /* Light grey */
     border-top: 7px solid #f8c15b; /* Blue */

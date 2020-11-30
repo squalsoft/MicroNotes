@@ -1,22 +1,30 @@
 <template>
-  <div id="app">    
-    <h1>MicroNotes</h1>
-    <div v-if="$route.matched.some(({ name }) => name === 'Notes')">
-      <input type="button" class="exit" value="Выйти" @click="exit"/>  
-    </div>
-    <div id="nav" v-else>
-      <router-link to="/login">Вход</router-link> |  
-      <router-link to="/register">Регистрация</router-link>    
-    </div>
+  <div id="app">   
+    <ErrorBoundary> 
+      <h1>MicroNotes</h1>    
+      <div v-if="$store.state.sys.loading" class="loader"></div>
+      <div v-if="$route.matched.some(({ name }) => name === 'Notes')">
+        <input type="button" class="exit" value="Выйти" @click="exit"/>  
+      </div>
+      <div id="nav" v-else>
+        <router-link to="/login">Вход</router-link> |  
+        <router-link to="/register">Регистрация</router-link>    
+      </div>
+      
     
-    <router-view/>
+      <router-view/>
+    </ErrorBoundary>
   </div>
 </template>
 
 <script>
 import cookies from "js-cookie";
+import ErrorBoundary from '@/components/ErrorBoundary.vue'
 
 export default {
+  components: {
+    ErrorBoundary
+  },
   data: function () {
     return {
       isLoggedIn: false,

@@ -4,23 +4,24 @@
         contenteditable ref="noteInput">    
     </div>        
 
-    <input type="image" title="Удалить" @click="del" :disabled="loading" src="/delete.png" 
+    <input :disabled="$store.state.sys.loading"
+      @click="del" src="/delete.png" 
+      type="image" title="Удалить" 
       height="30px" class="del-btn hidden"/> 
-    <input v-if="!shareId" type="image" title="Открыть общий доступ"
-      @click="share" :disabled="loading" src="/share.png" 
+    <input v-if="showShareButton" 
+      :disabled="$store.state.sys.loading"
+      @click="share"
+      type="image" title="Открыть общий доступ"
+      src="/share.png" 
       height="30px" class="share-btn hidden"/>
     <div v-if="shareUrl">
       <i>Ссылка для общего доступа:</i><br>
       {{shareUrl}}
     </div>
-    <div v-if="error" class="error">
-      {{error}}
-    </div>
   </div>
 </template>
 
 <script>
-import {errorDetails} from "@/utils/error";
 
 export default {
   props: {
@@ -30,11 +31,10 @@ export default {
   },
   data: function () {
     return {
-      error: "",      
-      loading: false,
       text: this.value,
       shapshotText: this.value,
-      shareUrl: ""
+      shareUrl: "",
+      showShareButton: true
     }
   },
   mounted() {
@@ -54,18 +54,11 @@ export default {
   methods: { 
     async checkAndSave() {
       if(this.text !== this.shapshotText) {
-        this.error = "";
         this.shapshotText = this.text;
-        // Сохраняем
-        try {
-          await this.$axios.post("/api/notes/update/" + this.id, {
-              text: this.text
-            });                  
-        } catch(err) {      
-          this.error = errorDetails(err);
-        } finally {
-          this.loading = false;
-        }
+        // Сохраняем        
+        await this.$axios.post("/api/notes/update/" + this.id, {
+            text: this.text
+          });                         
       }
     },  
     // Обновление содержимого элемента заметки
@@ -73,36 +66,20 @@ export default {
       this.text = event.target.innerText;
     },
     setShareUrl(shareId) {
+      this.showShareButton = false;
       this.shareUrl = window.location.origin + "/" +
         this.$router.resolve({ name: 'Shared', 
           params: { id: shareId } }).href;
     },
     async share() {
       // Даём общий доступ
-      this.loading = true;
-      this.error = "";
-      try {
-        const response = await this.$axios.post("/api/notes/share/" + this.id);  
-        this.shareId = response.data.shareId;  
-        this.setShareUrl(response.data.shareId);
-      } catch(err) {      
-        this.error = errorDetails(err);
-      } finally {
-        this.loading = false;
-      }     
+      const response = await this.$axios.post("/api/notes/share/" + this.id);  
+      this.setShareUrl(response.data.shareId);    
     },
     async del() {
-      // Удаляем
-      this.loading = true;
-      this.error = "";
-      try {
-        await this.$axios.post("/api/notes/delete/" + this.id);
-        this.$emit("removed", this.id);
-      } catch(err) {      
-        this.error = errorDetails(err);
-      } finally {
-        this.loading = false;
-      }     
+      // Удаляем           
+      await this.$axios.post("/api/notes/delete/" + this.id);
+      this.$emit("removed", this.id);    
     }
   },
   watch: {
