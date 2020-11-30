@@ -16,6 +16,9 @@ axios.defaults.baseURL = "http://localhost:9000";
 axios.interceptors.request.use(function (config) {
   // Ставим индикатор загрузки перед запросом
   store.commit("sys/setLoader", true);
+  // Сбрасываем последнюю ошибку
+  store.commit("sys/setError", "");
+
   const token = cookies.get("x-access-token");
   if (token) {
     config.headers.common["x-access-token"] = token;

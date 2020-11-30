@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 import Register from '../views/Register.vue'
 import Login from '../views/Login.vue'
 import Shared from '../views/Shared.vue'
@@ -22,8 +21,7 @@ function checkAccess(next) {
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    redirect: { name: 'Notes' },
     // Проверка доступа
     async beforeEnter(to, from, next) {
       checkAccess(next);

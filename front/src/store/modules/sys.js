@@ -1,10 +1,14 @@
 const state = () => ({
-  loading: false
+  loading: false,
+  err: ""
 });
 
 const mutations = {
   setLoader(state, val) {
     state.loading = val;
+  },
+  setError(state, val) {
+    state.err = val;
   }
 };
 

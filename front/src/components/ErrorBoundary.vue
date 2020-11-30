@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="error-global" v-if="showError">{{ err }}</div>
+    <div class="error-global" v-if="$store.state.sys.err">{{ $store.state.sys.err }}</div>
     <slot></slot>
   </div>
 </template>
@@ -15,24 +15,22 @@ export default {
   //   },
   data() {
     return {
-      err: "",
       vm: null,
       info: null,
-      showError: false,
       timerId: null
     };
   },
   errorCaptured(err, vm, info) {
     console.log(err);
-    this.err = errorDetails(err);    
-    // Устанавливаем отображение ошибки на время
-    this.showError = true;
+    const errMsg = errorDetails(err);   
+    this.$store.commit("sys/setError", errMsg);
 
+    // Устанавливаем отображение ошибки на время
     if(this.timerId) {
       // Отменяем предыдущий таймаут
       clearTimeout(this.timerId);
     }
-    this.timerId = setTimeout(()=>{this.showError = false;}, 4000);
+    this.timerId = setTimeout(()=>{this.$store.commit("sys/setError", "");}, 5000);
 
     // Системная информация
     this.vm = vm;
